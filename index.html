@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LittleFS Disk Image Viewer</title>
+    <link href="tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mx-auto">
+        <h1 class="text-xl my-2">LittleFS Disk Image Viewer</h1>
+        <div id="content"></div>
+    </div>
+
+    <!-- Include the Wasmer WASI JavaScript library -->
+    <script type="module">
+        import { WASI } from 'https://cdn.jsdelivr.net/npm/@wasmer/wasi@latest/lib/index.esm.js';
+        import { WasmFs } from 'https://cdn.jsdelivr.net/npm/@wasmer/wasmfs@latest/lib/index.esm.js';
+
+        const wasmFs = new WasmFs();
+        const wasi = new WASI({
+            args: [],
+            env: {},
+            bindings: {
+                ...WASI.defaultBindings,
+                fs: wasmFs.fs,
+            }
+        });
+
+        async function runWasm() {
+            // Fetch and instantiate the WebAssembly module
+            const response = await fetch('main.async.wasm');
+            const buffer = await response.arrayBuffer();
+            const { instance } = await WebAssembly.instantiate(buffer, {
+                wasi_snapshot_preview1: wasi.wasiImport
+            });
+
+            // Start the WASI instance
+            wasi.start(instance);
+
+            // Display output (if your WASM module uses stdout)
+            const output = wasmFs.getStdOut();
+            document.getElementById('content').textContent = `Output:\n${output}`;
+        }
+
+        runWasm().catch(err => {
+            console.error('Error running WebAssembly:', err);
+            document.getElementById('content').textContent = 'Failed to run WebAssembly module.';
+        });
+    </script>
+</body>
+</html>
