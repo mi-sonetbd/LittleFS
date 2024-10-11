@@ -27,6 +27,13 @@
             }
         });
 
+        // Define the traverseCallback function required by the WebAssembly module
+        function traverseCallback() {
+            console.log('traverseCallback function called from WebAssembly');
+            // Add any specific logic here if required by your WASM module
+            return 0; // Return an appropriate value if needed by your WASM module
+        }
+
         async function runWasm() {
             try {
                 // Fetch and instantiate the WebAssembly module
@@ -40,6 +47,7 @@
                     wasi_snapshot_preview1: wasi.wasiImport,
                     env: {
                         memory: new WebAssembly.Memory({ initial: 256, maximum: 512 }),
+                        traverseCallback: traverseCallback,
                         // Add other imports expected by the 'env' object here if required.
                     }
                 });
