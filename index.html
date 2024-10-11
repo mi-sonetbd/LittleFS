@@ -28,25 +28,35 @@
         });
 
         async function runWasm() {
-            // Fetch and instantiate the WebAssembly module
-            const response = await fetch('main.async.wasm');
-            const buffer = await response.arrayBuffer();
-            const { instance } = await WebAssembly.instantiate(buffer, {
-                wasi_snapshot_preview1: wasi.wasiImport
-            });
+            try {
+                // Fetch and instantiate the WebAssembly module
+                const response = await fetch('main.async.wasm');
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch WASM module: ${response.statusText}`);
+                }
 
-            // Start the WASI instance
-            wasi.start(instance);
+                const buffer = await response.arrayBuffer();
+                const { instance } = await WebAssembly.instantiate(buffer, {
+                    wasi_snapshot_preview1: wasi.wasiImport,
+                    env: {
+                        memory: new WebAssembly.Memory({ initial: 256, maximum: 512 }),
+                        // Add other imports expected by the 'env' object here if required.
+                    }
+                });
 
-            // Display output (if your WASM module uses stdout)
-            const output = wasmFs.getStdOut();
-            document.getElementById('content').textContent = `Output:\n${output}`;
+                // Start the WASI instance
+                wasi.start(instance);
+
+                // Display output (if your WASM module uses stdout)
+                const output = wasmFs.getStdOut();
+                document.getElementById('content').textContent = `Output:\n${output}`;
+            } catch (err) {
+                console.error('Error running WebAssembly:', err);
+                document.getElementById('content').textContent = `Failed to run WebAssembly module: ${err.message}`;
+            }
         }
 
-        runWasm().catch(err => {
-            console.error('Error running WebAssembly:', err);
-            document.getElementById('content').textContent = 'Failed to run WebAssembly module.';
-        });
+        runWasm();
     </script>
 </body>
 </html>
