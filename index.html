@@ -1,70 +1,44 @@
+
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LittleFS Disk Image Viewer</title>
+<html>
+  <head>
+    <title>littlefs disk image viewer</title>
+    <meta charset="utf-8">
     <link href="tailwind.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mx-auto">
-        <h1 class="text-xl my-2">LittleFS Disk Image Viewer</h1>
-        <div id="content"></div>
+  </head>
+  <body class="overflow-y-scroll">
+    <div class="container mx-auto px-2">
+      <div class="flex justify-between items-center my-4">
+        <h1 class="text-xl my-2">Little FS Analyzer</h1>
+        <a href="#" id="about-button">About</a>
+      </div>
+      <div id="setup-box">
+        <div class="rounded border p-8">
+          <div class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 text-sm">
+            <label for="img-block-size-input" class="text-right">Block size:</label>
+            <input type="number" id="img-block-size-input" class="border text-right">
+            <label for="img-block-count-input" class="text-right">Block count:</label>
+            <input type="number" id="img-block-count-input" class="border text-right" placeholder="Auto">
+            <label for="img-read-size-input" class="text-right">Read size:</label>
+            <input type="number" id="img-read-size-input" class="border text-right" placeholder="Auto">
+            <label for="img-cache-size-input" class="text-right">Cache size:</label>
+            <input type="number" id="img-cache-size-input" class="border text-right" placeholder="Auto">
+            <label for="img-lookahead-size-input" class="text-right">Lookahead size:</label>
+            <input type="number" id="img-lookahead-size-input" class="border text-right" placeholder="Auto">
+            <label for="max-cached-blocks-input" class="text-right">Cache blocks:</label>
+            <input type="number" id="max-cached-blocks-input" class="border text-right" placeholder="Auto">
+          </div>
+          <div class="text-center mt-10 mb-4">
+            <label for="img-file-input" class="bg-blue-600 text-white py-2 px-4 border shadow-lg text-lg uppercase">Open disk image/bin</label>
+            <input type="file" id="img-file-input" class="opacity-0 w-px h-px">
+          </div>
+        </div>
+      </div>
+      <div id="content"></div>
+      <script type="application/javascript" src="app-resources.js"></script>
+      <script type="application/javascript" src="lib/ui.js"></script>
+      <script type="application/javascript" src="lib/lfs-reader.js"></script>
+      <script type="application/javascript" src="lib/main.js"></script>
     </div>
-
-    <!-- Include the Wasmer WASI JavaScript library -->
-    <script type="module">
-        import { WASI } from 'https://cdn.jsdelivr.net/npm/@wasmer/wasi@latest/lib/index.esm.js';
-        import { WasmFs } from 'https://cdn.jsdelivr.net/npm/@wasmer/wasmfs@latest/lib/index.esm.js';
-
-        const wasmFs = new WasmFs();
-        const wasi = new WASI({
-            args: [],
-            env: {},
-            bindings: {
-                ...WASI.defaultBindings,
-                fs: wasmFs.fs,
-            }
-        });
-
-        // Define the traverseCallback function required by the WebAssembly module
-        function traverseCallback() {
-            console.log('traverseCallback function called from WebAssembly');
-            // Add any specific logic here if required by your WASM module
-            return 0; // Return an appropriate value if needed by your WASM module
-        }
-
-        async function runWasm() {
-            try {
-                // Fetch and instantiate the WebAssembly module
-                const response = await fetch('main.async.wasm');
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch WASM module: ${response.statusText}`);
-                }
-
-                const buffer = await response.arrayBuffer();
-                const { instance } = await WebAssembly.instantiate(buffer, {
-                    wasi_snapshot_preview1: wasi.wasiImport,
-                    env: {
-                        memory: new WebAssembly.Memory({ initial: 256, maximum: 512 }),
-                        traverseCallback: traverseCallback,
-                        // Add other imports expected by the 'env' object here if required.
-                    }
-                });
-
-                // Start the WASI instance
-                wasi.start(instance);
-
-                // Display output (if your WASM module uses stdout)
-                const output = wasmFs.getStdOut();
-                document.getElementById('content').textContent = `Output:\n${output}`;
-            } catch (err) {
-                console.error('Error running WebAssembly:', err);
-                document.getElementById('content').textContent = `Failed to run WebAssembly module: ${err.message}`;
-            }
-        }
-
-        runWasm();
-    </script>
-</body>
+  </body>
 </html>
