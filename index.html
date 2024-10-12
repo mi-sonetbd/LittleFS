@@ -15,8 +15,18 @@
       <div id="setup-box">
         <div class="rounded border p-8">
           <div class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 text-sm">
-            <label for="img-block-size-input" class="text-right">Block size:</label>
-            <input type="number" id="img-block-size-input" class="border text-right">
+           <label for="img-block-size-input" class="text-right">Block size:</label>
+<input type="number" id="img-block-size-input"  class="border text-right" placeholder="4096">
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var inputField = document.getElementById('img-block-size-input');
+        if (inputField.value === '') {
+            inputField.value = 4096;
+        }
+    });
+</script> 
+            <!--<input type="number" id="img-block-size-input" class="border text-right">-->
             <label for="img-block-count-input" class="text-right">Block count:</label>
             <input type="number" id="img-block-count-input" class="border text-right" placeholder="Auto">
             <label for="img-read-size-input" class="text-right">Read size:</label>
