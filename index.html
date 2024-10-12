@@ -1,54 +1,134 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>littlefs disk image viewer</title>
-    <meta charset="utf-8">
-    <link href="tailwind.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAHAJI- by TETON | JAHAJI FS Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      main {
+        flex: 1;
+      }
+      
+        .custom-outline {
+    text-shadow: 
+      -1px -1px 0 #fff, 
+      1px -1px 0 #fff, 
+      -1px 1px 0 #fff, 
+      1px 1px 0 #fff;
+  }
+    </style>
   </head>
-  <body class="overflow-y-scroll">
-    <div class="container mx-auto px-2">
-      <div class="flex justify-between items-center my-4">
-        <h1 class="text-xl my-2">Little FS Analyzer</h1>
-        <a href="#" id="about-button">About</a>
-      </div>
-      <div id="setup-box">
-        <div class="rounded border p-8">
-          <div class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 text-sm">
-           <label for="img-block-size-input" class="text-right">Block size:</label>
-<input type="number" id="img-block-size-input"  class="border text-right" placeholder="4096">
+  <body class="bg-gray-100">
+    <!-- Header --> 
+<header class="bg-blue-900 text-white shadow-lg py-4 sticky top-0 z-50">
+  <div class="container mx-auto flex justify-between items-center px-4">
+    <h1 class="text-3xl font-bold">
+      <span class="font-bold">JAHAJI</span>
+      <span class="font-normal text-gray-600 custom-outline"> - by TETON</span>
+    </h1>
+    <nav>
+      <a href="#" class="text-white hover:text-gray-200 px-3">Home</a>
+      <a href="#" class="text-white hover:text-gray-200 px-3">About</a>
+      <a href="#" class="text-white hover:text-gray-200 px-3">Contact</a>
+    </nav>
+  </div>
+</header>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var inputField = document.getElementById('img-block-size-input');
-        if (inputField.value === '') {
-            inputField.value = 4096;
-        }
-    });
-</script> 
-            <!--<input type="number" id="img-block-size-input" class="border text-right">-->
-            <label for="img-block-count-input" class="text-right">Block count:</label>
-            <input type="number" id="img-block-count-input" class="border text-right" placeholder="Auto">
-            <label for="img-read-size-input" class="text-right">Read size:</label>
-            <input type="number" id="img-read-size-input" class="border text-right" placeholder="Auto">
-            <label for="img-cache-size-input" class="text-right">Cache size:</label>
-            <input type="number" id="img-cache-size-input" class="border text-right" placeholder="Auto">
-            <label for="img-lookahead-size-input" class="text-right">Lookahead size:</label>
-            <input type="number" id="img-lookahead-size-input" class="border text-right" placeholder="Auto">
-            <label for="max-cached-blocks-input" class="text-right">Cache blocks:</label>
-            <input type="number" id="max-cached-blocks-input" class="border text-right" placeholder="Auto">
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+      <!-- Title Section -->
+      <div class="flex justify-between items-center mb-8">
+
+
+ 
+      </div>
+
+      <!-- Setup Box Section -->
+      <div id="setup-box" class="bg-white rounded-lg shadow-lg p-6">
+          <div class="text-center mt-8">
+  <h2 class="text-3xl font-bold text-gray-400 inline-block">JAHAJI File System Explorer</h2>
+</div><br><br><br>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 text-sm">
+          <!-- Block Size Input -->
+          <div class="flex flex-col">
+            <label for="img-block-size-input" class="text-gray-700 font-medium mb-2">Block size:</label>
+            <input type="number" id="img-block-size-input" class="border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="4096">
           </div>
-          <div class="text-center mt-10 mb-4">
-            <label for="img-file-input" class="bg-blue-600 text-white py-2 px-4 border shadow-lg text-lg uppercase">Open disk image/bin</label>
-            <input type="file" id="img-file-input" class="opacity-0 w-px h-px">
+          
+          <!-- Block Count Input -->
+          <div class="flex flex-col">
+            <label for="img-block-count-input" class="text-gray-700 font-medium mb-2">Block count:</label>
+            <input type="number" id="img-block-count-input" class="border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Auto">
+          </div>
+          
+          <!-- Read Size Input -->
+          <div class="flex flex-col">
+            <label for="img-read-size-input" class="text-gray-700 font-medium mb-2">Read size:</label>
+            <input type="number" id="img-read-size-input" class="border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Auto">
+          </div>
+
+          <!-- Cache Size Input -->
+          <div class="flex flex-col">
+            <label for="img-cache-size-input" class="text-gray-700 font-medium mb-2">Cache size:</label>
+            <input type="number" id="img-cache-size-input" class="border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Auto">
+          </div>
+
+          <!-- Lookahead Size Input -->
+          <div class="flex flex-col">
+            <label for="img-lookahead-size-input" class="text-gray-700 font-medium mb-2">Lookahead size:</label>
+            <input type="number" id="img-lookahead-size-input" class="border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Auto">
+          </div>
+
+          <!-- Cache Blocks Input -->
+          <div class="flex flex-col">
+            <label for="max-cached-blocks-input" class="text-gray-700 font-medium mb-2">Cache blocks:</label>
+            <input type="number" id="max-cached-blocks-input" class="border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Auto">
           </div>
         </div>
+
+        <!-- Open Disk Image Button -->
+        <div class="text-center mt-8">
+          <label for="img-file-input" class="bg-blue-600 text-white py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 cursor-pointer">Open Disk Image / BIN</label>
+          <input type="file" id="img-file-input" class="hidden">
+        </div>
       </div>
-      <div id="content"></div>
-      <script type="application/javascript" src="app-resources.js"></script>
-      <script type="application/javascript" src="lib/ui.js"></script>
-      <script type="application/javascript" src="lib/lfs-reader.js"></script>
-      <script type="application/javascript" src="lib/main.js"></script>
-    </div>
+
+      <!-- Content Section -->
+      <div id="content" class="mt-10"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white py-4 mt-auto">
+      <div class="container mx-auto text-center">
+        <p class="text-sm">&copy; 2024 TETON. All rights reserved.</p>
+        <nav class="flex justify-center space-x-4">
+          <a href="#" class="text-white hover:text-gray-300">Privacy Policy</a>
+          <a href="#" class="text-white hover:text-gray-300">Terms of Service</a>
+        </nav>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="application/javascript" src="app-resources.js"></script>
+    <script type="application/javascript" src="lib/ui.js"></script>
+    <script type="application/javascript" src="lib/lfs-reader.js"></script>
+    <script type="application/javascript" src="lib/main.js"></script>
+
+    <!-- Default value setup for block size -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var inputField = document.getElementById('img-block-size-input');
+        if (inputField.value === '') {
+          inputField.value = 4096;
+        }
+      });
+    </script>
   </body>
 </html>
