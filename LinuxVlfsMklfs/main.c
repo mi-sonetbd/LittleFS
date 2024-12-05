@@ -1,0 +1,196 @@
+#include <stdio.h>
+#include <string.h>
+#include "lfs.h"
+
+// LittleFS configuration
+#define BLOCK_SIZE 4096
+#define BLOCK_COUNT 2048
+#define STORAGE_FILE "littlefs_rx.bin"
+#define INFO_STORAGE_FILE "info_storage.txt"
+
+// Block device functions
+int read_block(const struct lfs_config *c, lfs_block_t block, lfs_off_t offset, void *buffer, lfs_size_t size) {
+    FILE *f = fopen(STORAGE_FILE, "rb");
+    if (!f) return -1;
+    fseek(f, block * BLOCK_SIZE + offset, SEEK_SET);
+    fread(buffer, size, 1, f);
+    fclose(f);
+    return 0;
+}
+
+int write_block(const struct lfs_config *c, lfs_block_t block, lfs_off_t offset, const void *buffer, lfs_size_t size) {
+    FILE *f = fopen(STORAGE_FILE, "r+b");
+    if (!f) return -1;
+    fseek(f, block * BLOCK_SIZE + offset, SEEK_SET);
+    fwrite(buffer, size, 1, f);
+    fclose(f);
+    return 0;
+}
+
+int erase_block(const struct lfs_config *c, lfs_block_t block) {
+    FILE *f = fopen(STORAGE_FILE, "r+b");
+    if (!f) return -1;
+    fseek(f, block * BLOCK_SIZE, SEEK_SET);
+    uint8_t empty[BLOCK_SIZE];
+    memset(empty, 0xFF, BLOCK_SIZE);  // Erase means setting to 0xFF
+    fwrite(empty, BLOCK_SIZE, 1, f);
+    fclose(f);
+    return 0;
+}
+
+int sync(const struct lfs_config *c) {
+    // Nothing to sync as file is closed after each read/write
+    return 0;
+}
+
+
+
+// Function to load the info_storage.txt file from LittleFS
+void load_info_storage(lfs_t *lfs, int *w_folder_seek, int *w_file_seek, int *r_folder_seek, int *r_file_seek) {
+    lfs_file_t file;
+    int err = lfs_file_open(lfs, &file, INFO_STORAGE_FILE, LFS_O_RDONLY);
+    if (err >= 0) {
+        // Read data from the file
+        char buffer[128];
+        lfs_file_read(lfs, &file, buffer, sizeof(buffer));
+        sscanf(buffer, "folder-max-count: 12\nfile-max-count: 2048\nw-folder-seek: %d\nw-file-seek: %d\nr-folder-seek: %d\nr-file-seek: %d", w_folder_seek, w_file_seek, r_folder_seek, r_file_seek);
+        lfs_file_close(lfs, &file);
+    } else {
+        // File does not exist, initialize default values
+        *w_folder_seek = 1;
+        *w_file_seek = 0;
+        *r_folder_seek = 1;
+        *r_file_seek = 0;
+    }
+}
+
+// Function to update info_storage.txt in LittleFS
+void update_info_storage(lfs_t *lfs, int w_folder_seek, int w_file_seek, int r_folder_seek, int r_file_seek) {
+    lfs_file_t file;
+    lfs_file_open(lfs, &file, INFO_STORAGE_FILE, LFS_O_WRONLY | LFS_O_CREAT);
+    
+    char buffer[128];
+    snprintf(buffer, sizeof(buffer), "folder-max-count: 12\nfile-max-count: 2048\nw-folder-seek: %d\nw-file-seek: %d\nr-folder-seek: %d\nr-file-seek: %d\n", w_folder_seek, w_file_seek, r_folder_seek, r_file_seek);
+    lfs_file_write(lfs, &file, buffer, strlen(buffer));
+    lfs_file_close(lfs, &file);
+}
+
+
+int main() {
+    // Initialize storage file if it does not exist
+FILE *f = fopen(STORAGE_FILE, "r+b");
+if (!f) {
+    f = fopen(STORAGE_FILE, "w+b");
+    if (!f) {
+        perror("Failed to create storage file");
+        return -1;
+    }
+
+    // Dynamically allocate memory for the empty block
+    uint8_t *empty = (uint8_t *)malloc(BLOCK_SIZE * BLOCK_COUNT);  // Allocate memory for the increased size
+    if (!empty) {
+        perror("Failed to allocate memory");
+        fclose(f);
+        return -1;
+    }
+
+    memset(empty, 0xFF, BLOCK_SIZE * BLOCK_COUNT);  // Initialize with all 0xFF (erased state)
+    fwrite(empty, BLOCK_SIZE * BLOCK_COUNT, 1, f);  // Write the initialized data to the file
+
+    free(empty);  // Free the dynamically allocated memory
+}
+fclose(f);
+
+
+    // LittleFS configuration
+    struct lfs_config cfg = {
+        .read = read_block,
+        .prog = write_block,
+        .erase = erase_block,
+        .sync = sync,
+        .read_size = 256,
+        .prog_size = 256,
+        .block_size = 4096,
+        .block_count = 2048,
+        .cache_size = 256,
+        .lookahead_size = 128,
+        .block_cycles = 500,
+    };
+
+    lfs_t lfs;
+
+    // Format and mount the filesystem
+    lfs_format(&lfs, &cfg);
+    lfs_mount(&lfs, &cfg);
+
+        // Variables to hold seek positions
+    int w_folder_seek = 0, w_file_seek = 0, r_folder_seek = 0, r_file_seek = 0;
+    load_info_storage(&lfs, &w_folder_seek, &w_file_seek, &r_folder_seek, &r_file_seek);
+
+
+// Static log buffer to store the log data
+static uint8_t log_buffer[26] = {
+    0x18, 0x0A, 0x0A,   
+    0x09, 0x39, 0x15,   
+    0x00, 0x00, 0x00, 0x00,   
+    0x00, 0x00, 0x00, 0x00,   
+    0x00, 0x00, 0x00, 0x00,   
+    0x00, 0x00, 0x00, 0x00,   
+    0x00,   
+    0x64,   
+    0x00,   
+    0x01,0x18, 0x0A, 0x0A,   
+    0x09, 0x39, 0x15,   
+    0x00, 0x00, 0x00, 0x00,   
+    0x00, 0x00, 0x00, 0x00,   
+    0x00, 0x00, 0x00, 0x00,   
+    0x00, 0x00, 0x00, 0x00,   
+    0x00,   
+    0x64,   
+    0x00,   
+    0x01     
+};
+
+
+
+for (int i = 1; i <= 26000; i++) {
+    char foldername[10];
+    char filename[20];
+    char text[256];
+
+    // Determine folder number based on file count (2048 files per folder)
+    int folder_num = (i - 1) / 2048 + 1;
+
+    // Create folder name like "1", "2", "3", ...
+    snprintf(foldername, sizeof(foldername), "%d", folder_num);
+
+    // Create filename within the folder like "1/1.txt", "1/2.txt", ..., "2/1.txt", ...
+    snprintf(filename, sizeof(filename), "%s/%d.txt", foldername, i);
+
+    // Generate file content like "hello-1", "hello-2", ...
+    // snprintf(text, sizeof(text), "{\"-%d- did\":\"jhp-707\",\"dt\":\"2024-10-9 6:32:46\",\"lat\":\"22.335432\",\"lng\":\"91.869667\",\"spd\":\"0.28\",\"head\":\"0.00\",\"sat\":\"9\",\"sim\":\"2\",\"sig1\":\"21\",\"sig2\":\"24\",\"bat\":\"45\",\"sos\":\"0\",\"tem\":\"0\",\"crg\":\"1\",\"logs\":null}", i);
+
+    // Open the file for writing
+    lfs_file_t file;
+    lfs_mkdir(&lfs, foldername);  // Ensure the folder is created
+    lfs_file_open(&lfs, &file, filename, LFS_O_WRONLY | LFS_O_CREAT);
+    lfs_file_write(&lfs, &file, log_buffer, sizeof(log_buffer));  // Use text instead of log_buffer
+    lfs_file_close(&lfs, &file);
+
+    printf("Write Done: %s\n", filename);
+
+            // Update the write file seek
+        w_file_seek++;
+        if (w_file_seek >= 2048) {
+            w_file_seek = 0;
+            w_folder_seek++;
+        }
+
+        // Update the info_storage.txt file in LittleFS
+        update_info_storage(&lfs, w_folder_seek, w_file_seek, r_folder_seek, r_file_seek);
+}
+
+    lfs_unmount(&lfs);
+
+    return 0;
+}
