@@ -1,0 +1,323 @@
+    1  cd sonet/
+    2  make
+    3  sudo apt update
+    4  sudo apt install build-essential
+    5  sudo apt install build-essential --fix-missing?
+    6  sudo apt update --fix-missing
+    7  make
+    8  sudo apt install build-essential --fix-missing?
+    9  sudo apt install build-essential --fix-missing
+   10  make
+   11  ./hello
+   12  sudo apt install gdb
+   13  cd "/home/sonet/" && gcc hello.c -o hello && "/home/sonet/"hello
+   14  gcc hello.c -o hello && ./hello
+   15  ls
+   16  cd ..
+   17  ls
+   18  joss
+   19  cd sonet
+   20  gcc hello.c -o hello && ./hello
+   21  gcc main.c -o main && ./main
+   22  make
+   23  ls
+   24  make
+   25  gcc main.c -o main && ./main
+   26  ./main
+   27  ls
+   28  make clean
+   29  ls
+   30  make
+   31  ./main
+   32  make clean
+   33  gcc main.c -o main && ./mainmake 
+   34  make clean
+   35  make
+   36  ./main
+   37  cd "/home/sonet/" && make && ./main
+   38  make
+   39  make clean
+   40  cd "/home/sonet/" && make && ./main
+   41  make clean
+   42  cd "/home/sonet/" && make && ./main
+   43  make clean
+   44  cd "/home/sonet/" && make && ./main
+   45  make clean
+   46  cd "/home/sonet/" && make && ./main
+   47  make clean
+   48  cd "/home/sonet/" && make && ./main
+   49  make clean
+   50  cd "/home/sonet/" && make && ./main
+   51  make clean
+   52  cd "/home/sonet/" && make && ./main
+   53  make clean
+   54  cd "/home/sonet/" && make && ./main
+   55  make clean
+   56  cd "/home/sonet/" && make && ./main
+   57  ls
+   58  cd sonet
+   59  ls
+   60  cd ..
+   61  cd
+   62  cd ..
+   63  ls
+   64  cd sonet
+   65  ls
+   66  make
+   67  cd ..
+   68  ls
+   69  cd home
+   70  ls
+   71  cd sonet
+   72  ls
+   73  cat main.c
+   74  make
+   75  ./main
+   76  code .
+   77  ls
+   78  cd ../home/sonet
+   79  ls
+   80  cd sonet
+   81  ls
+   82  cd "/home/sonet/" && make && ./main
+   83  mklittlefs 
+   84  sudo apt update
+   85  sudo apt install git cmake build-essential
+   86  git clone https://github.com/ARMmbed/mklittlefs.git
+   87  git clone https://github.com/earlephilhower/mklittlefs.git
+   88  cd mklittlefs
+   89  mkdir build
+   90  cd build
+   91  cmake ..
+   92  make
+   93  cd ..
+   94  make
+   95  ./mklittlefs --help
+   96  ls
+   97  make
+   98  ./mklittlefs --help
+   99  ./mklittlefs --unpack extracted_folder --block-size 4096 --block-count 1024 littlefs_rx.bin
+  100  ./mklittlefs -u extracted_folder -b 4096 -c 1024 littlefs_rx.bin
+  101  ./mklittlefs --help
+  102  ./mklittlefs -u extracted_folder -b 4096 -s $((4096 * 1024)) littlefs_rx.bin
+  103  ./mklittlefs clean
+  104  ./mklittlefs -u extracted_folder -b 4096 -s $((4096 * 1024)) littlefs_rx.bin
+  105  cd "/home/sonet/" && make && ./main
+  106  ls
+  107  cd sonet
+  108  ls
+  109  cd mklittlefs
+  110  ls
+  111  ./mklittlefs -l littlefs_rx.bin
+  112  ./mklittlefs -l littlefs_rx.bin > output.txt
+  113  ./mklittlefs -u extracted_folder -b 4096 -s $((4096 * 1024)) littlefs_rx.bin
+  114  ./mklittlefs -l littlefs_rx.bin > output2.txt
+  115  sudo apt-get update
+  116  sudo apt-get install libfuse-dev fuse
+  117  sudo dnf install fuse fuse-devel
+  118  cd ..
+  119  git clone https://github.com/littlefs-project/littlefs-fuse.git
+  120  cd littlefs-fuse
+  121  make
+  122  mkdir mountpoint
+  123  ./littlefs-fuse littlefs_rx.bin mountpoint -o block_size=4096 -o block_count=1024
+  124  ls
+  125  ./lfs littlefs_rx.bin mountpoint -o block_size=4096 -o block_count=1024
+  126  ls -l
+  127  fusermount --version
+  128  sudo ./lfs littlefs_rx.bin mountpoint -o block_size=4096 -o block_count=1024
+  129  ls -ld mountpoint
+  130  sudo ./lfs littlefs_rx.bin mountpoint
+  131  lsmod | grep fuse
+  132  sudo modprobe fuse
+  133  sudo ./lfs littlefs_rx.bin mountpoint
+  134  sudo ./lfs littlefs_rx.bin mountpoint -o block_size=4096 -o block_count=1024
+  135  sudo chmod 755 mountpoint
+  136  sudo ./lfs littlefs_rx.bin mountpoint -o block_size=4096 -o block_count=1024
+  137  ls /dev/fuse
+  138  lsmod | grep fuse
+  139  ls -l /dev/fuse
+  140  sudo modprobe fuse
+  141  lsmod | grep fuse
+  142  zcat /proc/config.gz | grep FUSE
+  143  cat /etc/modprobe.d/blacklist.conf
+  144  reboot
+  145  cd home
+  146  ls
+  147  cd sonet
+  148  ls
+  149  cd ..
+  150  ls
+  151  cd home
+  152  ls
+  153  cd sonet
+  154  ls
+  155  cd littlefs-fuse/
+  156  lsmod | grep fuse
+  157  sudo ./lfs littlefs_rx.bin mountpoint -o block_size=4096 -o block_count=1024
+  158  cd "/home/sonet/" && make && ./main
+  159  make clean
+  160  cd "/home/sonet/" && make && ./main
+  161  make clean
+  162  cd "/home/sonet/" && make && ./main
+  163  make clean
+  164  cd "/home/sonet/" && make && ./main
+  165  make clean
+  166  cd "/home/sonet/" && make && ./main
+  167  make clean
+  168  cd "/home/sonet/" && make && ./main
+  169  cd sonet/mklittlefs/
+  170  ls
+  171  make clean
+  172  make
+  173  make clean
+  174  make
+  175  make clean
+  176  make
+  177  make clean
+  178  make
+  179  cd ..
+  180  ls
+  181  cd littlefs-fuse/
+  182  ls
+  183  make
+  184  sudo ./lfs littlefs_rx.bin mountpoint -o block_size=4096 -o block_count=1024
+  185  ls -l
+  186  sudo ./lfs littlefs_rx.bin mountpoint -o block_size=4096 -o block_count=1024
+  187  lfs --help
+  188  sudo ./lfs littlefs_rxx.bin mountpoint -o block_size=4096 -o block_count=1024
+  189  lfs --help
+  190  ./littlefs-fuse littlefs_rx.bin /mountpoint
+  191  lfs -ls
+  192  ls -l
+  193  ./lfs_fuse littlefs_rx.bin /mountpoint
+  194  ls
+  195  ./lfs_fuse littlefs_rx.bin
+  196  ./lfs littlefs_rx.bin ./mountpoint
+  197  ./lfs littlefs_rx.bin
+  198  make
+  199  make clean
+  200  ls
+  201  cd littlefs
+  202  ls
+  203  cd ..
+  204  ls
+  205  make
+  206  ./lfs littlefs_rx.bin
+  207  sudo usermod -aG fuse $(whoami)
+  208  fusermount -u ./mountpoint
+  209  fusermount -u /mountpoint
+  210  sudo apt-get install fuse3 libfuse3-dev
+  211  ./lfs littlefs_rx.bin ./mountpoint -s
+  212  ./lfs littlefs_rx.bin /mountpoint -s
+  213  make clean
+  214  make
+  215  ./lfs littlefs_rx.bin /mountpoint -s
+  216  cd ..
+  217  ls
+  218  python test.py
+  219  sudo apt update
+  220  sudo apt upgrade
+  221  sudo apt update
+  222  sudo apt upgrade
+  223  sudo apt install python3
+  224  python3 --version
+  225  sudo apt install python3-pip
+  226  cd mklittlefs/
+  227  make clean
+  228  make
+  229  ./mklittlefs -l littlefs_rx.bin
+  230  ./mklittlefs -l littlefs_rx.bin text.txt
+  231  ./mklittlefs -l littlefs_rx.bin > text.txt
+  232  pip3 --version
+  233  pip3 install littlefs-python
+  234  cd "/home/sonet/" && make && ./main
+  235  make clean
+  236  cd "/home/sonet/" && make && ./main
+  237  make clean
+  238  cd "/home/sonet/" && make && ./main
+  239  make clean
+  240  cd "/home/sonet/" && make && ./main
+  241  make clean
+  242  cd "/home/sonet/" && make && ./main
+  243  make clean
+  244  cd "/home/sonet/" && make && ./main
+  245  cd "/home/" && make && ./main
+  246  make clean
+  247  cd sonet
+  248  ls
+  249  make clean
+  250  cd "/home/" && make && ./main
+  251  cd "/home/sonet/" && make && ./main
+  252  make clean
+  253  cd "/home/sonet/" && make && ./main
+  254  make clean
+  255  cd "/home/sonet/" && make && ./main
+  256  make clean
+  257  cd "/home/sonet/" && make && ./main
+  258  make clean
+  259  cd "/home/sonet/" && make && ./main
+  260  make clean
+  261  cd "/home/sonet/" && make && ./main
+  262  make clean
+  263  cd "/home/sonet/" && make && ./main
+  264  make clean
+  265  cd "/home/sonet/" && make && ./main
+  266  make clean
+  267  make cleancd "/home/sonet/" && make && ./main
+  268  cd "/home/sonet/" && make && ./main
+  269  make clean
+  270  cd "/home/sonet/" && make && ./main
+  271  make clean
+  272  cd "/home/sonet/" && make && ./main
+  273  make clean
+  274  cd "/home/sonet/" && make && ./main
+  275  make clean
+  276  cd "/home/sonet/" && make && ./main
+  277  make clean
+  278  cd "/home/sonet/" && make && ./main
+  279  make clean
+  280  cd "/home/sonet/" && make && ./main
+  281  make clean
+  282  cd "/home/sonet/" && make && ./main
+  283  make clean
+  284  cd "/home/sonet/" && make && ./main
+  285  make clean
+  286  cd "/home/sonet/" && make && ./main
+  287  make clean
+  288  cd "/home/sonet/" && make && ./main
+  289  make clean
+  290  cd "/home/sonet/" && make && ./main
+  291  make clean
+  292  cd "/home/sonet/" && make && ./main
+  293  make clean
+  294  cd "/home/sonet/" && make && ./main
+  295  make clean
+  296  cd "/home/sonet/" && make && ./main
+  297  make clean
+  298  cd "/home/sonet/" && make && ./main
+  299  make clean
+  300  cd "/home/sonet/" && make && ./main
+  301  make clean
+  302  cd "/home/sonet/" && make && ./main
+  303  make clean
+  304  cd "/home/sonet/" && make && ./main
+  305  make clean
+  306  cd "/home/sonet/" && make && ./main
+  307  make clean
+  308  cd "/home/sonet/" && make && ./main
+  309  make clean
+  310  cd "/home/sonet/" && make && ./main
+  311  ls
+  312  python i2c.py
+  313  python3 i2c.py
+  314  ls
+  315  cd "/home/sonet/" && make && ./main
+  316  cd "/home/sonet/mklittlefs/" && g++ tempCodeRunnerFile.cpp -o tempCodeRunnerFile && "/home/sonet/mklittlefs/"tempCodeRunnerFile
+  317  cd "/home/sonet/mklittlefs/" && g++ main.cpp -o main && "/home/sonet/mklittlefs/"main
+  318  cd "/home/sonet/mklittlefs/" && g++ tempCodeRunnerFile.cpp -o tempCodeRunnerFile && "/home/sonet/mklittlefs/"tempCodeRunnerFile
+  319  cd "/home/sonet/" && make && ./main
+  320  cd "/home/sonet/mklittlefs/" && g++ tempCodeRunnerFile.cpp -o tempCodeRunnerFile && "/home/sonet/mklittlefs/"tempCodeRunnerFile
+  321  ./lfs littlefs_rx.bin
+  322  ./mklittlefs -l littlefs_rx.bin
+  323  history > command_history.txt
