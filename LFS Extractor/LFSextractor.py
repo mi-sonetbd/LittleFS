@@ -153,7 +153,7 @@ def create_littlefs():
 # Main application window
 root = tk.Tk()
 root.title("LittleFS Tool-Kit")
-root.geometry("700x600")
+root.geometry("600x600")
 root.configure(bg="#f7f7f7")
 root.iconbitmap(r"C:\Users\sonet.MISONET\OneDrive\Desktop\Github\LittleFS\LFS Extractor\sonet.ico")
 
@@ -194,13 +194,15 @@ ttk.Button(create_frame, text="Create LittleFS", command=create_littlefs).grid(r
 config_frame = ttk.LabelFrame(root, text="Configuration", padding=20)
 config_frame.pack(fill=tk.X, padx=20, pady=10)
 
-ttk.Label(config_frame, text="Block Size (bytes):", width=25).grid(row=0, column=0, sticky="w", pady=5)
+# Block Size
+ttk.Label(config_frame, text="Block Size (bytes):", width=18).grid(row=0, column=0, sticky="w", pady=5)
 block_size_var = tk.IntVar(value=4096)
-ttk.Entry(config_frame, textvariable=block_size_var, width=20).grid(row=0, column=1, padx=5)
+ttk.Entry(config_frame, textvariable=block_size_var, width=18).grid(row=0, column=1, padx=5)
 
-ttk.Label(config_frame, text="Block Count:", width=25).grid(row=1, column=0, sticky="w", pady=5)
+# Block Count
+ttk.Label(config_frame, text="Block Count:", width=18).grid(row=0, column=2, sticky="w", pady=5, padx=20)
 block_count_var = tk.IntVar(value=1024)
-ttk.Entry(config_frame, textvariable=block_count_var, width=20).grid(row=1, column=1, padx=5)
+ttk.Entry(config_frame, textvariable=block_count_var, width=18).grid(row=0, column=3, padx=5)
 
 # Status Bar
 status_frame = tk.Frame(root, bg="#f7f7f7", height=30)
