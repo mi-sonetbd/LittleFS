@@ -1,10 +1,17 @@
 import os
+import sys
 import subprocess
 import tkinter as tk
 from tkinter import filedialog, ttk
 import threading
 import itertools
 import time
+
+# Path to mklittlefs.exe, handles bundled PyInstaller path
+if getattr(sys, 'frozen', False):  # Running as PyInstaller bundle
+    mklittlefs_path = os.path.join(sys._MEIPASS, "mklittlefs.exe")
+else:
+    mklittlefs_path = "mklittlefs.exe"  # Running as script
 
 def browse_file(entry):
     """Open file dialog and set file path to the entry."""
@@ -40,7 +47,15 @@ def run_command(command, operation_type, success_message, error_message):
     spinner_thread.start()
 
     try:
-        result = subprocess.run(command, capture_output=True, text=True)
+        # Update the first element of the command list to use the correct mklittlefs.exe path
+        command[0] = mklittlefs_path
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            shell=False,
+            creationflags=subprocess.CREATE_NO_WINDOW  # Suppress console
+        )
         if result.returncode == 0:
             spinner_message = success_message
             spinner_color = "green"
@@ -70,7 +85,7 @@ def extract_littlefs():
 
     total_size = block_size * block_count
     command = [
-        "mklittlefs.exe",
+        "mklittlefs.exe",  # Placeholder, will be replaced by mklittlefs_path
         "-u", output_dir,
         "-b", str(block_size),
         "-s", str(total_size),
@@ -118,7 +133,7 @@ def create_littlefs():
     total_size = block_size * block_count
 
     command = [
-        "mklittlefs.exe",
+        "mklittlefs.exe",  # Placeholder, will be replaced by mklittlefs_path
         "-c", input_dir,
         "-b", str(block_size),
         "-s", str(total_size),
@@ -140,7 +155,6 @@ root = tk.Tk()
 root.title("LittleFS Tool-Kit")
 root.geometry("700x600")
 root.configure(bg="#f7f7f7")
-# root.iconbitmap('sonet.ico')
 
 # Header
 header_frame = tk.Frame(root, bg="#1e90ff", height=60)
