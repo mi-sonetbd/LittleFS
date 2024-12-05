@@ -155,6 +155,7 @@ root = tk.Tk()
 root.title("LittleFS Tool-Kit")
 root.geometry("700x600")
 root.configure(bg="#f7f7f7")
+root.iconbitmap(r"C:\Users\sonet.MISONET\OneDrive\Desktop\Github\LittleFS\LFS Extractor\sonet.ico")
 
 # Header
 header_frame = tk.Frame(root, bg="#1e90ff", height=60)
