@@ -1,74 +1,200 @@
 import os
 import subprocess
-from tkinter import Tk, Label, Entry, Button, filedialog, messagebox, StringVar
+import tkinter as tk
+from tkinter import filedialog, ttk
+import threading
+import itertools
+import time
 
+def browse_file(entry):
+    """Open file dialog and set file path to the entry."""
+    file_path = filedialog.askopenfilename()
+    entry.delete(0, tk.END)
+    entry.insert(0, file_path)
 
-def select_image():
-    file_path = filedialog.askopenfilename(title="Select LittleFS Image",
-                                           filetypes=[("Binary Files", "*.bin"), ("All Files", "*.*")])
-    if file_path:
-        image_path.set(file_path)
+def browse_directory(entry):
+    """Open directory dialog and set directory path to the entry."""
+    dir_path = filedialog.askdirectory()
+    entry.delete(0, tk.END)
+    entry.insert(0, dir_path)
 
-def select_output_dir():
-    dir_path = filedialog.askdirectory(title="Select Output Directory")
-    if dir_path:
-        output_dir.set(dir_path)
+def update_status(color, text):
+    """Update the status display."""
+    status_label.config(text=text, fg=color)
 
-def extract_files():
-    image = image_path.get()
-    output = output_dir.get()
+def spinner_animation(label, operation_text):
+    """Spinner animation to indicate loading."""
+    global spinner_message
+    for frame in itertools.cycle(["|", "/", "-", "\\"]):
+        if not spinner_running:
+            break
+        label.config(text=f"{operation_text} {frame}", fg="blue")
+        time.sleep(0.2)
+    label.config(text=spinner_message, fg=spinner_color)
+
+def run_command(command, operation_type, success_message, error_message):
+    """Run the given command with spinner animation."""
+    global spinner_running, spinner_message, spinner_color
+    spinner_running = True
+    spinner_thread = threading.Thread(target=spinner_animation, args=(status_label, operation_type))
+    spinner_thread.start()
+
+    try:
+        result = subprocess.run(command, capture_output=True, text=True)
+        if result.returncode == 0:
+            spinner_message = success_message
+            spinner_color = "green"
+        else:
+            spinner_message = f"{error_message}: {result.stderr.strip()}"
+            spinner_color = "red"
+    except Exception as e:
+        spinner_message = f"{error_message}: {str(e)}"
+        spinner_color = "red"
+    finally:
+        spinner_running = False
+        spinner_thread.join()
+
+def extract_littlefs():
+    """Extract LittleFS image."""
+    input_file = extract_input_path.get().strip()
+    output_dir = extract_output_path.get().strip()
     block_size = block_size_var.get()
     block_count = block_count_var.get()
 
-    if not os.path.exists(image):
-        messagebox.showerror("Error", "Invalid image file!")
+    if not os.path.isfile(input_file):
+        update_status("red", "Error: Input file does not exist")
         return
 
-    if not os.path.exists(output):
-        messagebox.showerror("Error", "Invalid output directory!")
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
+
+    total_size = block_size * block_count
+    command = [
+        "mklittlefs.exe",
+        "-u", output_dir,
+        "-b", str(block_size),
+        "-s", str(total_size),
+        input_file,
+    ]
+
+    threading.Thread(
+        target=run_command,
+        args=(
+            command,
+            "Extracting LittleFS",
+            f"Extraction successful to {output_dir}",
+            "Error during extraction",
+        ),
+    ).start()
+
+def create_littlefs():
+    """Create LittleFS image."""
+    input_dir = create_input_path.get().strip()
+
+    # Always ask for the output file using a save dialog
+    output_file = filedialog.asksaveasfilename(
+        defaultextension=".bin",
+        filetypes=[("Binary Files", "*.bin"), ("All Files", "*.*")],
+        title="Save LittleFS Image"
+    )
+    if not output_file:
+        update_status("red", "Error: Output file is not specified")
         return
 
-    try:
-        command = [
-            "./mklittlefs",
-            "-u", output,
-            "-b", str(block_size),
-            "-s", str(int(block_size) * int(block_count)),
-            image
-        ]
-        result = subprocess.run(command, capture_output=True, text=True)
-        if result.returncode == 0:
-            messagebox.showinfo("Success", "Files extracted successfully!")
-        else:
-            messagebox.showerror("Error", result.stderr)
-    except Exception as e:
-        messagebox.showerror("Error", str(e))
+    # Normalize paths
+    input_dir = os.path.normpath(input_dir)
+    output_file = os.path.normpath(output_file)
 
-# GUI Setup
-root = Tk()
-root.title("LittleFS GUI Extractor")
+    if not input_dir:
+        update_status("red", "Error: Input directory is not specified")
+        return
 
-# Variables
-image_path = StringVar()
-output_dir = StringVar()
-block_size_var = StringVar(value="4096")
-block_count_var = StringVar(value="1024")
+    if not os.path.isdir(input_dir):
+        update_status("red", f"Error: The directory '{input_dir}' does not exist")
+        return
 
-# Layout
-Label(root, text="LittleFS Image:").grid(row=0, column=0, padx=5, pady=5, sticky="e")
-Entry(root, textvariable=image_path, width=50).grid(row=0, column=1, padx=5, pady=5)
-Button(root, text="Browse", command=select_image).grid(row=0, column=2, padx=5, pady=5)
+    block_size = block_size_var.get()
+    block_count = block_count_var.get()
+    total_size = block_size * block_count
 
-Label(root, text="Output Directory:").grid(row=1, column=0, padx=5, pady=5, sticky="e")
-Entry(root, textvariable=output_dir, width=50).grid(row=1, column=1, padx=5, pady=5)
-Button(root, text="Browse", command=select_output_dir).grid(row=1, column=2, padx=5, pady=5)
+    command = [
+        "mklittlefs.exe",
+        "-c", input_dir,
+        "-b", str(block_size),
+        "-s", str(total_size),
+        output_file,
+    ]
 
-Label(root, text="Block Size:").grid(row=2, column=0, padx=5, pady=5, sticky="e")
-Entry(root, textvariable=block_size_var, width=10).grid(row=2, column=1, padx=5, pady=5, sticky="w")
+    threading.Thread(
+        target=run_command,
+        args=(
+            command,
+            "Creating LittleFS bin",
+            f"Image created successfully: {output_file}",
+            "Error during creation",
+        ),
+    ).start()
 
-Label(root, text="Block Count:").grid(row=3, column=0, padx=5, pady=5, sticky="e")
-Entry(root, textvariable=block_count_var, width=10).grid(row=3, column=1, padx=5, pady=5, sticky="w")
+# Main application window
+root = tk.Tk()
+root.title("LittleFS Tool-Kit")
+root.geometry("700x600")
+root.configure(bg="#f7f7f7")
+# root.iconbitmap('sonet.ico')
 
-Button(root, text="Extract Files", command=extract_files).grid(row=4, column=1, pady=10)
+# Header
+header_frame = tk.Frame(root, bg="#1e90ff", height=60)
+header_frame.pack(fill=tk.X)
+header_label = tk.Label(header_frame, text="LittleFS Tool-Kit", font=("Segoe UI", 20, "bold"), bg="#1e90ff", fg="white")
+header_label.pack(pady=10)
+
+# Extract Section
+extract_frame = ttk.LabelFrame(root, text="Extract LittleFS", padding=20)
+extract_frame.pack(fill=tk.X, padx=20, pady=10)
+
+ttk.Label(extract_frame, text="Input File (.bin):", width=25).grid(row=0, column=0, sticky="w", pady=5)
+extract_input_path = ttk.Entry(extract_frame, width=40)
+extract_input_path.grid(row=0, column=1, padx=5)
+ttk.Button(extract_frame, text="Browse", command=lambda: browse_file(extract_input_path)).grid(row=0, column=2, padx=5)
+
+ttk.Label(extract_frame, text="Output Directory:", width=25).grid(row=1, column=0, sticky="w", pady=5)
+extract_output_path = ttk.Entry(extract_frame, width=40)
+extract_output_path.grid(row=1, column=1, padx=5)
+ttk.Button(extract_frame, text="Browse", command=lambda: browse_directory(extract_output_path)).grid(row=1, column=2, padx=5)
+
+ttk.Button(extract_frame, text="Extract LittleFS", command=extract_littlefs).grid(row=2, column=1, pady=10)
+
+# Create Section
+create_frame = ttk.LabelFrame(root, text="Create LittleFS", padding=20)
+create_frame.pack(fill=tk.X, padx=20, pady=10)
+
+ttk.Label(create_frame, text="Input Directory:", width=25).grid(row=0, column=0, sticky="w", pady=5)
+create_input_path = ttk.Entry(create_frame, width=40)
+create_input_path.grid(row=0, column=1, padx=5)
+ttk.Button(create_frame, text="Browse", command=lambda: browse_directory(create_input_path)).grid(row=0, column=2, padx=5)
+
+ttk.Button(create_frame, text="Create LittleFS", command=create_littlefs).grid(row=1, column=1, pady=10)
+
+# Configuration Section
+config_frame = ttk.LabelFrame(root, text="Configuration", padding=20)
+config_frame.pack(fill=tk.X, padx=20, pady=10)
+
+ttk.Label(config_frame, text="Block Size (bytes):", width=25).grid(row=0, column=0, sticky="w", pady=5)
+block_size_var = tk.IntVar(value=4096)
+ttk.Entry(config_frame, textvariable=block_size_var, width=20).grid(row=0, column=1, padx=5)
+
+ttk.Label(config_frame, text="Block Count:", width=25).grid(row=1, column=0, sticky="w", pady=5)
+block_count_var = tk.IntVar(value=1024)
+ttk.Entry(config_frame, textvariable=block_count_var, width=20).grid(row=1, column=1, padx=5)
+
+# Status Bar
+status_frame = tk.Frame(root, bg="#f7f7f7", height=30)
+status_frame.pack(fill=tk.X, side=tk.BOTTOM)
+status_label = tk.Label(status_frame, text="Status: Ready", font=("Segoe UI", 10), bg="#f7f7f7", fg="green", anchor="w")
+status_label.pack(fill=tk.X, padx=20)
+
+# Footer
+footer_label = tk.Label(root, text="© Morshedu Islam Sonet", font=("Segoe UI", 10), bg="#f7f7f7", fg="gray")
+footer_label.pack(side=tk.BOTTOM, pady=10)
 
 root.mainloop()

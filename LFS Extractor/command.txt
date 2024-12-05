@@ -1,0 +1,3 @@
+mklittlefs.exe -c extracted_folder -b 4096 -s 4194304 littlefs_rx_new.bin
+mklittlefs.exe -u extracted_folder -b 4096 -s 4194304 littlefs_rx.bin
+pyinstaller --onefile --windowed --icon=sonet.ico --add-data "sonet.ico;." --add-data "mklittlefs.exe;." LFSextractor.py
