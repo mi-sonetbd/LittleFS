@@ -10,10 +10,10 @@ import time
 # Path to mklittlefs.exe, handles bundled PyInstaller path
 if getattr(sys, 'frozen', False):  # Running as PyInstaller bundle
     mklittlefs_path = os.path.join(sys._MEIPASS, "mklittlefs.exe")
-    icon_path = os.path.join(sys._MEIPASS, "sonet.ico")
+    icon_path = os.path.join(sys._MEIPASS, "logo.ico")
 else:
     mklittlefs_path = "mklittlefs.exe"  # Running as script
-    icon_path = "sonet.ico"
+    icon_path = "logo.ico"
 
 def browse_file(entry):
     """Open file dialog and set file path to the entry."""

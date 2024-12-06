@@ -5,7 +5,7 @@ a = Analysis(
     ['LFSextractor.py'],
     pathex=[],
     binaries=[],
-    datas=[('sonet.ico', '.'), ('mklittlefs.exe', '.')],
+    datas=[('logo.ico', '.'), ('mklittlefs.exe', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['sonet.ico'],
+    icon=['logo.ico'],
 )
