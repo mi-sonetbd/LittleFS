@@ -10,8 +10,10 @@ import time
 # Path to mklittlefs.exe, handles bundled PyInstaller path
 if getattr(sys, 'frozen', False):  # Running as PyInstaller bundle
     mklittlefs_path = os.path.join(sys._MEIPASS, "mklittlefs.exe")
+    icon_path = os.path.join(sys._MEIPASS, "sonet.ico")
 else:
     mklittlefs_path = "mklittlefs.exe"  # Running as script
+    icon_path = "sonet.ico"
 
 def browse_file(entry):
     """Open file dialog and set file path to the entry."""
@@ -155,7 +157,12 @@ root = tk.Tk()
 root.title("LittleFS Tool-Kit")
 root.geometry("600x600")
 root.configure(bg="#f7f7f7")
-root.iconbitmap(r"C:\Users\sonet.MISONET\OneDrive\Desktop\Github\LittleFS\LFS Extractor\sonet.ico")
+
+# Set application icon
+try:
+    root.iconbitmap(icon_path)
+except Exception as e:
+    print(f"Warning: Could not set icon: {e}")
 
 # Header
 header_frame = tk.Frame(root, bg="#1e90ff", height=60)
