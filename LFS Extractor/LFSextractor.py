@@ -104,6 +104,17 @@ def extract_littlefs():
         ),
     ).start()
 
+
+def add_placeholder_to_empty_dirs(path):
+    """Recursively adds a .keep file to every empty folder (including nested)."""
+    for root, dirs, files in os.walk(path):
+        if not dirs and not files:
+            os.makedirs(root, exist_ok=True)
+            placeholder = os.path.join(root, ".keep")
+            with open(placeholder, "w") as f:
+                f.write("placeholder")
+
+
 def create_littlefs():
     """Create LittleFS image."""
     input_dir = create_input_path.get().strip()
@@ -129,6 +140,7 @@ def create_littlefs():
     if not os.path.isdir(input_dir):
         update_status("red", f"Error: The directory '{input_dir}' does not exist")
         return
+    add_placeholder_to_empty_dirs(input_dir)
 
     block_size = block_size_var.get()
     block_count = block_count_var.get()
